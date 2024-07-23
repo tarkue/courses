@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument } from '../../domain/entities';
+import { EMAIL, UserDocument } from '../../domain/entities';
 import {
   ResetPasswordDTO,
   RestorePasswordDTO,
@@ -16,7 +16,10 @@ export class UserRepository {
     @InjectModel(Entities.User) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async update(email: string, { password }: UpdatePasswordDTO): Promise<void> {
+  async updatePassword(
+    email: string,
+    { password }: UpdatePasswordDTO,
+  ): Promise<void> {
     await this.userModel
       .updateOne({ email: email }, { $set: { hashedPassword: password } })
       .exec();
@@ -28,7 +31,7 @@ export class UserRepository {
       .exec();
   }
 
-  async addPasswordResetToken(
+  async setPasswordResetToken(
     passwordResetToken: string,
     { email }: RestorePasswordDTO,
   ): Promise<void> {
@@ -40,12 +43,14 @@ export class UserRepository {
       .exec();
   }
 
-  async getPasswordResetToken({ email }: ResetPasswordDTO) {
-    const { passwordResetToken } = await this.userModel
-      .findOne({ email: email })
-      .select('passwordResetToken')
+  async getEmailByResetToken({
+    passwordResetToken,
+  }: ResetPasswordDTO): Promise<string> {
+    const { email } = await this.userModel
+      .findOne({ passwordResetToken: passwordResetToken })
+      .select(EMAIL)
       .exec();
 
-    return passwordResetToken;
+    return email;
   }
 }

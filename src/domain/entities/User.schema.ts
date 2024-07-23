@@ -17,7 +17,7 @@ export const UserSchema = new Schema<IUser>(
     hashedPassword: String,
     passwordResetToken: String,
     grade: {
-      type: Number,
+      type: String,
       enum: Grades,
     },
   },

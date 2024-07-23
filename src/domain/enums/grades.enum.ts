@@ -1,5 +1,5 @@
 export enum Grades {
-  Beginner = 25,
-  Intermediate = 50,
-  Professional = 75,
+  Beginner = 'Beginner',
+  Intermediate = 'Intermediate',
+  Professional = 'Professional',
 }

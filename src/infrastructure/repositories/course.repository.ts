@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDocument } from '../../domain/entities';
+import { GRADE, UserDocument } from '../../domain/entities';
 import { Entities, Grades } from '../../domain/enums';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class CourseRepository {
   async getGrade(email: string): Promise<Grades> {
     const { grade } = await this.userModel
       .findOne({ email: email })
-      .select('grade')
+      .select(GRADE)
       .exec();
 
     return grade;

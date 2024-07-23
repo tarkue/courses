@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IUser, UserDocument } from '../../domain/entities';
+import { HASHED_PASSWORD, IUser, UserDocument } from '../../domain/entities';
 import { CreateUserDTO, RegisterDTO, SignInDTO } from 'src/application/dto';
 import { Entities } from '../../domain/enums';
 
@@ -14,7 +14,7 @@ export class AuthRepository {
   async getHashedPasswordByEmail({ email }: SignInDTO): Promise<string> {
     const { hashedPassword } = await this.userModel
       .findOne({ email: email })
-      .select('hashedPassword')
+      .select(HASHED_PASSWORD)
       .exec();
 
     return hashedPassword;

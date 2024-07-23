@@ -1,0 +1,26 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig, EnvObjects } from 'src/infrastructure/config/env.objects';
+
+@Injectable()
+export class AdminGuard implements CanActivate {
+  private readonly config: AppConfig;
+
+  constructor(private configService: ConfigService) {
+    this.config = this.configService.get<AppConfig>(EnvObjects.APP_CONFIG);
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const admin_key: string = request.body['admin_key'];
+
+    if (this.config.admin_key != admin_key) throw new UnauthorizedException();
+
+    return true;
+  }
+}

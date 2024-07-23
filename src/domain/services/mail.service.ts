@@ -2,7 +2,11 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EnvObjects, SMTPConfig } from 'src/infrastructure/config/env.objects';
-import { RestorePasswordDTO, CreateUserDTO } from 'src/application/dto';
+import {
+  RestorePasswordDTO,
+  CreateUserDTO,
+  UpgradeDTO,
+} from 'src/application/dto';
 
 @Injectable()
 export class MailService {
@@ -20,8 +24,16 @@ export class MailService {
       subject: 'Welcome to Nice App!',
       template: './registration',
       context: {
-        url,
+        link: url,
       },
+    });
+  }
+
+  async sendTelegramLink(dto: CreateUserDTO | UpgradeDTO) {
+    await this.mailerService.sendMail({
+      to: dto.email,
+      subject: 'Welcome to Nice App!',
+      template: './telegram',
     });
   }
 
@@ -37,7 +49,7 @@ export class MailService {
       subject: 'Welcome to Nice App!',
       template: './password-reset',
       context: {
-        url,
+        link: url,
       },
     });
   }

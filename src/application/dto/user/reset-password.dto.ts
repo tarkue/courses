@@ -1,17 +1,14 @@
-import { IsDefined, IsEmail } from 'class-validator';
-import { UpdatePasswordDTO } from './update.dto';
+import { IsNotEmpty, IsStrongPassword } from 'class-validator';
+import { PASSWORD_OPTIONS } from '../options/password.options';
 
-export class ResetPasswordDTO extends UpdatePasswordDTO {
-  @IsDefined()
-  @IsEmail()
-  email: string;
-
-  @IsDefined()
+export class ResetPasswordDTO {
+  @IsStrongPassword(PASSWORD_OPTIONS)
+  password: string;
+  @IsNotEmpty()
   passwordResetToken: string;
 
-  constructor({ password, email, passwordResetToken }: any = {}) {
-    super(password);
-    this.email = email;
+  constructor({ password, passwordResetToken }: any = {}) {
+    this.password = password;
     this.passwordResetToken = passwordResetToken;
   }
 }

@@ -1,7 +1,6 @@
-import { IsDefined, IsEmail } from 'class-validator';
+import { IsEmail } from 'class-validator';
 
 export class RestorePasswordDTO {
-  @IsDefined()
   @IsEmail()
   email: string;
 

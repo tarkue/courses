@@ -1,13 +1,12 @@
-import { IsDefined, IsEmail } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
 import { Grades } from 'src/domain/enums';
 
 export class CreateUserDTO {
-  @IsDefined()
   @IsEmail()
   email: string;
-  @IsDefined()
+  @IsEnum(Grades)
   grade: Grades;
-  @IsDefined()
+  @IsNotEmpty()
   admin_key: string;
 
   constructor({ email, grade, admin_key }: any = {}) {

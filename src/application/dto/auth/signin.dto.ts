@@ -1,12 +1,9 @@
-import { IsDefined, IsEmail, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, MinLength } from 'class-validator';
 
 export class SignInDTO {
-  @IsDefined()
   @IsEmail()
   email: string;
-  @IsDefined()
-  @MinLength(8)
-  @MaxLength(100)
+  @MinLength(6)
   password: string;
 
   constructor({ email, password }: any = {}) {

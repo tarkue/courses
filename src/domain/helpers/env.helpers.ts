@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { config } from 'dotenv-flow';
-import dotenvExpand from 'dotenv-expand';
+import * as dotenvExpand from 'dotenv-expand';
 
 export function expandEnvVariables(): void {
   dotenv.config();

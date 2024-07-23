@@ -14,7 +14,7 @@ export interface MongoOptions {
   options: {
     dbName: string;
     auth: {
-      user: string;
+      username: string;
       password: string;
     };
   };
@@ -25,7 +25,7 @@ export interface SMTPConfig {
   port: number;
   data: {
     registrationEndpoint: string;
-    passwordResetEndpoint;
+    passwordResetEndpoint: string;
   };
   options: {
     from: string;
@@ -50,7 +50,7 @@ export const configuration = (): any => ({
     options: {
       dbName: process.env.MONGO_DB_NAME,
       auth: {
-        user: process.env.MONGO_USER,
+        username: process.env.MONGO_USER,
         password: process.env.MONGO_PASS,
       },
     },
