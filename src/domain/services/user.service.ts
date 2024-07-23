@@ -53,7 +53,7 @@ export class UserService {
       );
       await this.userRepository.updatePassword(email, resetPasswordDTO);
       await this.userRepository.setPasswordResetToken(null, { email });
-    } catch (error) {
+    } catch {
       throw new UnprocessableEntityException('Wrong password reset token');
     }
   }

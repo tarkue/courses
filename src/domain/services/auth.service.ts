@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { validate } from 'class-validator';
 import { CreateUserDTO, RegisterDTO, SignInDTO } from 'src/application/dto';
 import { AuthRepository } from 'src/infrastructure/repositories';
@@ -46,7 +50,11 @@ export class AuthService {
 
     if (errors.length) throw errors;
 
-    await this.authRepository.create(createUserDTO);
+    try {
+      await this.authRepository.create(createUserDTO);
+    } catch {
+      throw new BadRequestException('User with this email already exists');
+    }
     this.mailService.sendRegisrationLink(createUserDTO);
 
     if (
