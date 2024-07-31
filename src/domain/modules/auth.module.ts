@@ -16,7 +16,10 @@ import { EnvObjects, JWTConfig } from 'src/infrastructure/config';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<JWTConfig>(EnvObjects.JWT_OPTIONS).secret,
-        signOptions: { expiresIn: '7d' },
+        signOptions: {
+          algorithm: 'RS256',
+          expiresIn: '1h',
+        },
       }),
       inject: [ConfigService],
     }),

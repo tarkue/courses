@@ -4,7 +4,11 @@ export class TokenGetDTO {
   @IsNotEmpty()
   token: string;
 
-  constructor({ token }: any = {}) {
+  @IsNotEmpty()
+  refreshToken: string;
+
+  constructor({ token, refreshToken }: any = {}) {
     this.token = token;
+    this.refreshToken = refreshToken;
   }
 }

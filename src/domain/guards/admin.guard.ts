@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig, EnvObjects } from 'src/infrastructure/config/env.objects';
+import { Request } from 'express';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -16,7 +17,7 @@ export class AdminGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request: Request = context.switchToHttp().getRequest();
     const admin_key: string = request.body['admin_key'];
 
     if (this.config.admin_key != admin_key) throw new UnauthorizedException();

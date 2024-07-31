@@ -10,7 +10,9 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from './mail.service';
 import { Grades } from '../enums';
-import { getPasswordHash } from '../helpers/hash.helpers';
+import { getPasswordHash } from '../helpers';
+import { RefreshTokenDTO, TokenGetDTO } from 'src/application/dto/auth';
+import { generateHex } from '../helpers';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +22,7 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async signIn(signInDTO: SignInDTO): Promise<string> {
+  async signIn(signInDTO: SignInDTO): Promise<TokenGetDTO> {
     const errors = await validate(signInDTO);
 
     if (errors.length) throw errors;
@@ -32,7 +34,7 @@ export class AuthService {
 
     if (!compare) throw new UnauthorizedException();
 
-    return await this.jwtService.signAsync({ email: signInDTO.email });
+    return await this.getTokenAndRefreshToken(signInDTO.email);
   }
 
   async register(registerDTO: RegisterDTO): Promise<void> {
@@ -43,6 +45,19 @@ export class AuthService {
     registerDTO.password = await getPasswordHash(registerDTO.password);
 
     await this.authRepository.register(registerDTO);
+  }
+
+  async refreshToken(refreshTokenDTO: RefreshTokenDTO): Promise<TokenGetDTO> {
+    const errors = await validate(refreshTokenDTO);
+    if (errors.length) throw errors;
+
+    try {
+      const email =
+        await this.authRepository.getEmailByRefreshToken(refreshTokenDTO);
+      return await this.getTokenAndRefreshToken(email);
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 
   async sendRegistrationLink(createUserDTO: CreateUserDTO): Promise<void> {
@@ -62,5 +77,13 @@ export class AuthService {
       createUserDTO.grade == Grades.Professional
     )
       this.mailService.sendTelegramLink(createUserDTO);
+  }
+
+  private async getTokenAndRefreshToken(email: string): Promise<TokenGetDTO> {
+    const token = await this.jwtService.signAsync({ email: email });
+    const refreshToken = generateHex();
+
+    this.authRepository.addRefreshToken(email, refreshToken);
+    return new TokenGetDTO({ token, refreshToken });
   }
 }

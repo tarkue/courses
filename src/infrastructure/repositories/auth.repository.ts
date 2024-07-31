@@ -1,8 +1,18 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { HASHED_PASSWORD, IUser, UserDocument } from '../../domain/entities';
-import { CreateUserDTO, RegisterDTO, SignInDTO } from 'src/application/dto';
+import {
+  EMAIL,
+  HASHED_PASSWORD,
+  IUser,
+  UserDocument,
+} from '../../domain/entities';
+import {
+  CreateUserDTO,
+  RefreshTokenDTO,
+  RegisterDTO,
+  SignInDTO,
+} from 'src/application/dto';
 import { Entities } from '../../domain/enums';
 
 @Injectable()
@@ -32,5 +42,21 @@ export class AuthRepository {
     await this.userModel
       .updateOne({ email: email }, { $set: { hashedPassword: password } })
       .exec();
+  }
+
+  async addRefreshToken(email: string, refreshToken: string): Promise<void> {
+    await this.userModel
+      .updateOne({ email: email }, { $set: { refreshToken: refreshToken } })
+      .exec();
+  }
+
+  async getEmailByRefreshToken(
+    refreshTokenDTO: RefreshTokenDTO,
+  ): Promise<string> {
+    const { email } = await this.userModel
+      .findOne({ refreshToken: refreshTokenDTO.refreshToken })
+      .select(EMAIL)
+      .exec();
+    return email;
   }
 }
