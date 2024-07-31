@@ -1,10 +1,11 @@
-import { Body, Controller, Post, UseGuards, Res, Req } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Res } from '@nestjs/common';
 import { AuthService } from 'src/domain/services';
 import { CreateUserDTO, SignInDTO, RegisterDTO } from '../dto';
 import { AdminGuard } from 'src/domain/guards';
 import { RefreshTokenDTO, TokenGetDTO } from '../dto/auth';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { REFRESH_TOKEN } from 'src/domain/consts';
+import { Cookies } from 'src/domain/decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -28,11 +29,11 @@ export class AuthController {
   }
 
   @Post('refreshToken')
-  async refreshToken(
-    @Req() req: Request,
+  async getRefreshToken(
+    @Cookies(REFRESH_TOKEN) refreshToken: string,
     @Res() res: Response,
   ): Promise<TokenGetDTO> {
-    const dto = new RefreshTokenDTO(req.cookies[REFRESH_TOKEN]);
+    const dto = new RefreshTokenDTO({ refreshToken });
     const answer = await this.authService.refreshToken(dto);
 
     return this.authService.sendTokenAndRefreshToken(res, answer);
