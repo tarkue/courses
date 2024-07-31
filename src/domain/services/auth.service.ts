@@ -10,9 +10,11 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from './mail.service';
 import { Grades } from '../enums';
-import { getPasswordHash } from '../helpers';
+import { getExpiresDate, getPasswordHash } from '../helpers';
 import { RefreshTokenDTO, TokenGetDTO } from 'src/application/dto/auth';
 import { generateHex } from '../helpers';
+import { Response } from 'express';
+import { REFRESH_TOKEN } from '../consts';
 
 @Injectable()
 export class AuthService {
@@ -85,5 +87,15 @@ export class AuthService {
 
     this.authRepository.addRefreshToken(email, refreshToken);
     return new TokenGetDTO({ token, refreshToken });
+  }
+
+  sendTokenAndRefreshToken(res: Response, answer: TokenGetDTO) {
+    res.cookie(REFRESH_TOKEN, answer.refreshToken, {
+      expires: getExpiresDate(30),
+      sameSite: 'strict',
+      httpOnly: true,
+    });
+
+    return answer;
   }
 }
